@@ -30,7 +30,7 @@ and save all measurements done in the excel-sheet for approval.
 
 ### Running test application
 
-This exercise assumes that you use Microchip Studio on Windows. The template
+This exercise assumes that you use Microchip Studio on Windows (restart the PC and select Windows in the boot menu). The template
 project is available in this repository (`AVR32 Template`). It is very important
 that the repository is cloned on the local disk, otherwise you will get build
 errors. You will be prompted to update the project, do this. The AVR32 UC3
@@ -42,7 +42,7 @@ Microchip Studio ("Start without debugging, Ctrl+Shift+F5) to build the test
 application, program the card and run the application. If there is a message
 that the JTAG tool must be upgraded, follow the instructions on screen.
 
-When the program starts running on the card, a LED will start blinking every
+When the program starts running on the card, an orange LED will start blinking every
 second. Instead of clicking the outlined green play button to run the program,
 you can also click the filled green play button to start with debugging. If you
 have added any breakpoints, the execution will pause once you reach them (or you
