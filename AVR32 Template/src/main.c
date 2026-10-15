@@ -35,18 +35,61 @@ void init(){
     #endif
 }
 
-__attribute__((__interrupt__)) static void interrupt_J3(void){ 
+__attribute__((__interrupt__)) static void interrupt_J3(void){
 
+    if(gpio_get_pin_interrupt_flag(TEST_A) == 1){
+        gpio_set_pin_low(RESPONSE_A);
+
+        while(gpio_get_pin_value(TASK_A) == 0){}
+
+        gpio_set_pin_high(RESPONSE_A);
+        
+        gpio_clear_pin_interrupt_flag(TEST_A);
+
+    }
+    if(gpio_get_pin_interrupt_flag(TEST_B) == 1){
+
+        // respond to the signal from BRTT
+        gpio_set_pin_low(RESPONSE_B);
+
+        // BRTT sets the pin value of TASK_X as HIGH when it is done with a test
+        // And we want to set the response 
+        while(gpio_get_pin_value(TASK_B) == 0){}
+
+        gpio_set_pin_high(RESPONSE_B);
+        
+        gpio_clear_pin_interrupt_flag(TEST_B);
+
+    }
+    if(gpio_get_pin_interrupt_flag(TEST_B) == 1){
+        gpio_set_pin_low(RESPONSE_C);
+
+        while(gpio_get_pin_value(TASK_C) == 0){}
+
+        gpio_set_pin_high(RESPONSE_C);
+
+        gpio_clear_pin_interrupt_flag(TEST_C);
+
+    }
 }
 
 
 int main (void){
     init();
     
-    while(1){
-        gpio_toggle_pin(LED0_GPIO);
+    gpio_configure_pin (TEST_A, GPIO_DIR_INPUT | GPIO_INIT_HIGH);
+    gpio_configure_pin (TEST_B, GPIO_DIR_INPUT | GPIO_INIT_HIGH);
+    gpio_configure_pin (TEST_C, GPIO_DIR_INPUT | GPIO_INIT_HIGH);
 
-        printf("tick\n");
+    gpio_configure_pin (RESPONSE_A, GPIO_DIR_OUTPUT | GPIO_INIT_HIGH);
+    gpio_configure_pin (RESPONSE_B, GPIO_DIR_OUTPUT | GPIO_INIT_HIGH);
+    gpio_configure_pin (RESPONSE_C, GPIO_DIR_OUTPUT | GPIO_INIT_HIGH);
+
+    gpio_enable_pin_interrupt(TEST_A,GPIO_FALLING_EDGE);
+    gpio_enable_pin_interrupt(TEST_B,GPIO_FALLING_EDGE);
+    gpio_enable_pin_interrupt(TEST_C,GPIO_FALLING_EDGE);
+
+    while(1){
         
         busy_delay_ms(500);
     }
