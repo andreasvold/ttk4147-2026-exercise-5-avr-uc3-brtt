@@ -40,7 +40,7 @@ __attribute__((__interrupt__)) static void interrupt_J3(void){
     if(gpio_get_pin_interrupt_flag(TEST_A) == 1){
         gpio_set_pin_low(RESPONSE_A);
 
-        while(gpio_get_pin_value(TASK_A) == 0){}
+        while(gpio_get_pin_value(TEST_A) == 0){}
 
         gpio_set_pin_high(RESPONSE_A);
         
@@ -54,7 +54,7 @@ __attribute__((__interrupt__)) static void interrupt_J3(void){
 
         // BRTT sets the pin value of TASK_X as HIGH when it is done with a test
         // And we want to set the response 
-        while(gpio_get_pin_value(TASK_B) == 0){}
+        while(gpio_get_pin_value(TEST_B) == 0){}
 
         gpio_set_pin_high(RESPONSE_B);
         
@@ -64,7 +64,7 @@ __attribute__((__interrupt__)) static void interrupt_J3(void){
     if(gpio_get_pin_interrupt_flag(TEST_B) == 1){
         gpio_set_pin_low(RESPONSE_C);
 
-        while(gpio_get_pin_value(TASK_C) == 0){}
+        while(gpio_get_pin_value(TEST_C) == 0){}
 
         gpio_set_pin_high(RESPONSE_C);
 
