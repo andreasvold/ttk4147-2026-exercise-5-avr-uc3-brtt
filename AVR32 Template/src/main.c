@@ -14,6 +14,10 @@
 #define TEST_C      AVR32_PIN_PA27
 #define RESPONSE_C  AVR32_PIN_PB00
 
+volatile bool TEST_A_interrupt_flag = false;
+volatile bool TEST_B_interrupt_flag = false;
+volatile bool TEST_C_interrupt_flag = false;
+
 
 __attribute__((__interrupt__)) static void interrupt_J3(void);
 
@@ -38,35 +42,23 @@ void init(){
 __attribute__((__interrupt__)) static void interrupt_J3(void){
 
     if(gpio_get_pin_interrupt_flag(TEST_A) == 1){
-        gpio_set_pin_low(RESPONSE_A);
 
-        while(gpio_get_pin_value(TEST_A) == 0){}
+        TEST_A_interrupt_flag = true;
 
-        gpio_set_pin_high(RESPONSE_A);
-        
         gpio_clear_pin_interrupt_flag(TEST_A);
 
     }
     if(gpio_get_pin_interrupt_flag(TEST_B) == 1){
 
-        // respond to the signal from BRTT
-        gpio_set_pin_low(RESPONSE_B);
+        TEST_B_interrupt_flag = true;
 
-        // BRTT sets the pin value of TASK_X as HIGH when it is done with a test
-        // And we want to set the response 
-        while(gpio_get_pin_value(TEST_B) == 0){}
-
-        gpio_set_pin_high(RESPONSE_B);
-        
         gpio_clear_pin_interrupt_flag(TEST_B);
+
 
     }
     if(gpio_get_pin_interrupt_flag(TEST_C) == 1){
-        gpio_set_pin_low(RESPONSE_C);
 
-        while(gpio_get_pin_value(TEST_C) == 0){}
-
-        gpio_set_pin_high(RESPONSE_C);
+        TEST_C_interrupt_flag = true;
 
         gpio_clear_pin_interrupt_flag(TEST_C);
 
@@ -90,7 +82,36 @@ int main (void){
     gpio_enable_pin_interrupt(TEST_C,GPIO_FALLING_EDGE);
 
     while(1){
-        
-        busy_delay_ms(500);
+        if(TEST_A_interrupt_flag == true){
+            gpio_set_pin_low(RESPONSE_A);
+
+            if(gpio_get_pin_value(TEST_A) == 1){
+                gpio_set_pin_high(RESPONSE_A);
+                TEST_A_interrupt_flag = false;
+            }
+
+        }
+        if (TEST_B_interrupt_flag == true){
+            // respond to the signal from BRTT
+            gpio_set_pin_low(RESPONSE_B);
+
+            // BRTT sets the pin value of TASK_X as HIGH when it is done with a test
+            // And we want to set the response 
+            // altrnative here is to use a while loop inside instead of relying on the outer while(1) to check for the high on test
+            if(gpio_get_pin_value(TEST_B) == 1){
+                gpio_set_pin_high(RESPONSE_B);
+                TEST_B_interrupt_flag = false;
+            }
+
+        }
+        if (TEST_C_interrupt_flag == true){
+            gpio_set_pin_low(RESPONSE_C);
+
+            if(gpio_get_pin_value(TEST_C) == 1){
+                gpio_set_pin_high(RESPONSE_C);
+                TEST_C_interrupt_flag = false;
+            }
+        }
+        //busy_delay_ms(500);   use busy delay or not? without may starve other important tasks on mcu if there are any
     }
 }
