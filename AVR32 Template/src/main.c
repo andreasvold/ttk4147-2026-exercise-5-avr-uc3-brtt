@@ -61,7 +61,7 @@ __attribute__((__interrupt__)) static void interrupt_J3(void){
         gpio_clear_pin_interrupt_flag(TEST_B);
 
     }
-    if(gpio_get_pin_interrupt_flag(TEST_B) == 1){
+    if(gpio_get_pin_interrupt_flag(TEST_C) == 1){
         gpio_set_pin_low(RESPONSE_C);
 
         while(gpio_get_pin_value(TEST_C) == 0){}
